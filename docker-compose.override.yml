@@ -1,0 +1,102 @@
+# IMPORTANT: The version must match the version of docker-compose.yml
+---
+version: '2.3'
+
+# The following override shows an example for the cockroachdb
+services:
+  # Your custom Docker image here:
+  rstudio:
+    image: rocker/geospatial
+    container_name: rstudio
+    ports:
+      - "${LOCAL_LISTEN_ADDR}8787:8787"
+    networks:
+      app_net:
+        # Ensure to pick an IP address from docker-compose.yml network
+        # that is not yet taken by other sevices
+        ipv4_address: 172.16.238.200
+    volumes: 
+      - ./rstudio:/home/rstudio/foobar rocker/rstudio  
+    environment:
+      - PASSWORD=P@ssw0rd
+  shiny:
+    container_name: shiny
+    # To build the image locally, comment out "image" below, and uncomment
+    # "build" and the lines indented under it.
+    image: rocker/shiny
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    restart: always
+    # Setting this to something other than 'root' will cause shiny apps not to
+    # run on the localhost:80 "Welcome to Shiny" diagnostics page mentioned
+    # below.
+    user: "root"
+    # Uncomment the lines below to disable application logs STDOUT output
+    # environment:
+    #   - APPLICATION_LOGS_TO_STDOUT=false
+    ports:
+      - "${LOCAL_LISTEN_ADDR}3838:3838"
+    networks:
+      app_net:
+        # Ensure to pick an IP address from docker-compose.yml network
+        # that is not yet taken by other sevices
+        ipv4_address: 172.16.238.201
+    volumes:
+      - "./shiny_logs:/var/log/shiny-server"
+      # Comment the line below out for initial testing. With it commented out,
+      # going to localhost:80 in one's web browser will show a "Welcome to
+      # Shiny Server!" diagnostics page.
+      # - "./mountpoints/apps:/srv/shiny-server"
+  anacondaos:
+    image: continuumio/anaconda3:latest
+    volumes:
+      -  ./anaconda_storage:/opt/notebooks/
+    environment:
+      environment_name: test_env
+      package1: jupyter
+    ports:
+      -  "${LOCAL_LISTEN_ADDR}8888:8888"
+    networks:
+      app_net:
+        # Ensure to pick an IP address from docker-compose.yml network
+        # that is not yet taken by other sevices
+        ipv4_address: 172.16.238.202
+    tty: true
+    container_name: anacondafull 
+    command: /bin/bash -c "/opt/conda/bin/conda install jupyter -y --quiet && /opt/conda/bin/conda install -c https://repo.anaconda.com/pkgs/main/linux-64 -y conda && /opt/conda/bin/jupyter notebook --NotebookApp.iopub_data_rate_limit=1.0e10 --notebook-dir=/opt/notebooks --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root"
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: christhedba@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+       - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - "${LOCAL_LISTEN_ADDR}5050:80"
+    networks:
+      app_net:
+        # Ensure to pick an IP address from docker-compose.yml network
+        # that is not yet taken by other sevices
+        ipv4_address: 172.16.238.203
+    restart: unless-stopped  
+  mssql:
+    container_name: mssql_container
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "${LOCAL_LISTEN_ADDR}1433:1433"
+    environment:
+      SA_PASSWORD: "Password2019"
+      ACCEPT_EULA: "Y"
+    volumes: 
+          - ./mssql/sqlsystem:/var/opt/mssql/data
+          - ./mssql/sqldata:/var/opt/sqlserver/data
+          - ./mssql/sqllog:/var/opt/sqlserver/log
+          - ./mssql/sqlbackup:/var/opt/sqlserver/backup
+    networks:
+      app_net:
+        # Ensure to pick an IP address from docker-compose.yml network
+        # that is not yet taken by other sevices
+        ipv4_address: 172.16.238.204
+    restart: unless-stopped  
