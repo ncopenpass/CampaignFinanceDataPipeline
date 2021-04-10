@@ -10,7 +10,7 @@ The Python scripts are Jupyter Notebooks, but should be easily converted to an i
 ## Create a directory for the Python scrips
 ## Create a data subdirectory to import the files obtained from NCSBE
 
-1. Data
+1. Data - http://nc-campaign-finance-storage.s3-website-us-east-1.amazonaws.com/
    * active_committee_list
    * committee_doc_list
    * committee_list
