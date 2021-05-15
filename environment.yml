@@ -1,0 +1,7 @@
+name: ncopenpass-campaignfinance-datapipeline
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - cytoolz
+  - pandas
