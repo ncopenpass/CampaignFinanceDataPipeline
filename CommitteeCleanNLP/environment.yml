@@ -1,0 +1,11 @@
+name: ncopenpass-campaignfinance-nlp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas
+  - notebook
+  - pip
+  - pip:
+    - spacy
+    - truecase
