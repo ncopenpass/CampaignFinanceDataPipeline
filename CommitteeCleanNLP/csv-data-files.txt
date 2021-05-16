@@ -1,0 +1,2 @@
+https://nc-campaign-finance-storage.s3.amazonaws.com/sboe-raw-files/candidate_list/candidate_list_2010_to_2020.csv
+https://nc-campaign-finance-storage.s3.amazonaws.com/database-csv-files/committees_export_20210410.csv
