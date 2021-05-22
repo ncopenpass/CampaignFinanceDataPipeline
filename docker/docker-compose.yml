@@ -1,0 +1,83 @@
+version: "3"
+services:
+
+  jupyter:
+    container_name: jupyter
+    build:
+      context: ./jupyter
+    ports:
+      - "8888:8888"
+    links:
+      - postgres
+    volumes:
+          - "./notebooks:/home/jovyan/notebooks" 
+          - "./data:/home/jovyan/data"
+
+  postgres:
+    container_name: postgresdb
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: data
+      POSTGRES_PASSWORD: data
+      POSTGRES_DB: data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+       - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped  
+
+  # neo4j:
+  #   container_name: neo4j
+  #     image: neo4j:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - 7474:7474
+  #     - 7687:7687
+  #   volumes:
+  #     - ./neo4j/conf:/conf
+  #     - ./neo4j/data:/data
+  #     - ./neo4j/import:/import
+  #     - ./neo4j/logs:/logs
+  #     - ./neo4j/plugins:/plugins
+  #   environment: 
+  #     # Raise memory limits
+  #     - NEO4J_dbms_memory_pagecache_size=1G
+  #     - NEO4J_dbms.memory.heap.initial_size=1G
+  #     - NEO4J_dbms_memory_heap_max__size=1G
+
+  # rstudio:
+  #   container_name: rstudio
+  #   image: rocker/geospatial
+  #   ports:
+  #     - "8787:8787"
+  #   volumes: 
+  #     - ./rstudio:/home/rstudio/foobar rocker/rstudio  
+  #   environment:
+  #     - PASSWORD=P@ssw0rd
+
+  # shiny:
+  #   container_name: shiny
+  #   image: rocker/shiny
+  #   restart: always
+  #   user: "root"
+  #   ports:
+  #     - "3838:3838"
+  #   volumes:
+  #     - ./shiny_logs:/var/log/shiny-server
+      # Comment the line below out for initial testing. With it commented out,
+      # going to localhost:80 in one's web browser will show a "Welcome to
+      # Shiny Server!" diagnostics page.
+      # - "./mountpoints/apps:/srv/shiny-server"
+
+  
+
